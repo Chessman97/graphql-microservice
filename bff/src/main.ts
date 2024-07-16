@@ -6,6 +6,7 @@ import { BffModule } from './bff.module';
 async function bootstrap() {
   const config = new ConfigService();
 
+  // Создаем гибрид
   const app = await NestFactory.create(BffModule);
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,

@@ -16,6 +16,13 @@ export class Bff {
   type: BffTypes;
 }
 
+@ObjectType({ description: 'BffResponse' })
+export class BffResponse {
+  @Field(type => Number, { nullable: false })
+  message: number;
+}
+
+// Объект на вход метода doJob
 @InputType()
 export class BffInput {
   @Field({ nullable: false })
