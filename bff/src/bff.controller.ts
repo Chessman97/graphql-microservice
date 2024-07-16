@@ -1,4 +1,4 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Get, Logger, Param } from '@nestjs/common';
 import { BffService } from './bff.service';
 
 @Controller()
@@ -11,5 +11,11 @@ export class BffController {
   @Get()
   getHello(): string {
     return this.WorkerService.getHello();
+  }
+
+  @Get('do-job')
+  async getUserById(@Param('id') id: number) {
+    console.log('BBBBBBBBBB');
+    return id;
   }
 }
