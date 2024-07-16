@@ -1,35 +1,35 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { from, Observable } from 'rxjs';
-import { IHeavyJob, ILightJob } from './interfaces';
+import { Observable, of } from 'rxjs';
+import { HeavyJobDtoRequest, LightJobDtoRequest } from './dto';
+import { IMessageDto } from './interfaces';
 import { WorkerService } from './worker.service';
 
 @Controller()
 export class WorkerController {
   constructor(
-    private readonly WorkerService: WorkerService,
+    private readonly workerService: WorkerService,
     private readonly logger: Logger,
   ) {}
 
+  @UsePipes(new ValidationPipe({ transform: true }))
   @MessagePattern('heavy-job')
-  doHeavyJob(data: IHeavyJob): number {
-    this.logger.log(data);
-    return;
+  doHeavyJob(data: HeavyJobDtoRequest): any {
+    const methodName = this.doHeavyJob.name;
+    this.logger.log(`${methodName} | Data: ${data.count} | Start`);
+    const messages: IMessageDto[] = this.workerService.generateHeavyMessages(data.count);
+    this.logger.log(`${methodName} | Messages generated | End`);
+    return of(messages);
   }
 
+  @UsePipes(new ValidationPipe({ transform: true }))
   @MessagePattern('light-job')
-  doLightJob(data: ILightJob): Observable<number> {
+  doLightJob(data: LightJobDtoRequest): Observable<IMessageDto[]> {
     const methodName = this.doLightJob.name;
-    this.logger.log(data);
-    this.logger.log(`${methodName} | Data: ${data} | Start`);
-    const num: number = data.data;
-    const numPow: number = Math.pow(num, num);
-    this.logger.log(`${methodName} | Number squared: ${numPow} | End`);
-    return from([numPow]);
-  }
-
-  @Get()
-  getHello(): string {
-    return this.WorkerService.getHello();
+    const num = data.data;
+    this.logger.log(`${methodName} | Data: ${num} | Start`);
+    const messages = this.workerService.generateLightMessages(num);
+    this.logger.log(`${methodName} |  Messages generated | End`);
+    return of(messages);
   }
 }
