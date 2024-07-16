@@ -1,6 +1,5 @@
-import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TraceMiddleware } from './modules/common/trace/middlewares';
 import { WorkerController } from './worker.controller';
 import { WorkerService } from './worker.service';
 
@@ -9,8 +8,4 @@ import { WorkerService } from './worker.service';
   controllers: [WorkerController],
   providers: [WorkerService, Logger],
 })
-export class WorkerModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(TraceMiddleware).forRoutes(WorkerController);
-  }
-}
+export class WorkerModule {}
